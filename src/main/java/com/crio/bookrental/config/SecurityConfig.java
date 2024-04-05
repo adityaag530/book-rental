@@ -1,6 +1,8 @@
 package com.crio.bookrental.config;
 
 import com.crio.bookrental.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,11 +26,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+
     @Autowired
     UserService userService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        logger.debug("Configuring SecurityFilterChain...");
         return
                 httpSecurity
                         .csrf(csrf -> csrf.disable())
@@ -47,11 +52,13 @@ public class SecurityConfig {
     @Bean
     AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        logger.debug("Creating AuthenticationManager bean...");
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     AuthenticationProvider authenticationProvider() {
+        logger.debug("Creating DaoAuthenticationProvider bean...");
         var authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userService);
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -60,6 +67,7 @@ public class SecurityConfig {
 
     @Bean
     PasswordEncoder passwordEncoder() {
+        logger.debug("Creating BCryptPasswordEncoder bean...");
         return new BCryptPasswordEncoder();
     }
 }

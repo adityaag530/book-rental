@@ -6,6 +6,8 @@ import com.crio.bookrental.dto.ResponseDTO;
 import com.crio.bookrental.entity.Role;
 import com.crio.bookrental.entity.User;
 import com.crio.bookrental.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AuthService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     @Autowired
     UserRepository userRepository;
@@ -40,6 +44,7 @@ public class AuthService {
                 .role(request.getRole())
                 .build();
         userRepository.save(user);
+        logger.info("Saving user: {}", user.getEmail());
         return ResponseDTO.builder().message("User registered successfully.").build();
     }
 
@@ -47,6 +52,7 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(), request.getPassword()));
+        logger.info("User logged in: {}", request.getEmail());
         return ResponseDTO.builder().message("User logged in Successfully").build();
     }
 
